@@ -35,7 +35,7 @@ class Operator:
         """
         return self.number_of_operands
 
-    def calculate(self, list_of_operands: List[str]) -> float:
+    def calculate(self, list_of_operands: List[float]) -> float:
         """
         this function get operands and execute the operator on them
         :param list_of_operands: list of operands in the expression
@@ -57,6 +57,7 @@ class Addition(Operator):
         :param list_of_operands: list of operands in the expression
         :return: the addition of the numbers
         """
+        print(list_of_operands)
         return list_of_operands[0] + list_of_operands[1]
 
 
@@ -215,16 +216,16 @@ class Factorial(Operator):
         """
         Operator.__init__(self, 6, 1, 1)
 
-    def calculate(self, list_of_operands: List[int]) -> int:
+    def calculate(self, list_of_operands: List[float]) -> float:
         """
         this function get operand and find its factorial
         :param list_of_operands: list of operands in the expression
         :return: the factorial of the operand
         """
         answer = 1
-        for number in range(1, list_of_operands[0] + 1):
+        for number in range(1, int(list_of_operands[0]) + 1):
             answer *= number
-        return answer
+        return float(answer)
 
 
 class CreateOperator:

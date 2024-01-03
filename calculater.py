@@ -1,5 +1,5 @@
 from operators import Operator, CreateOperator
-from typing import List
+from typing import List, Tuple
 
 
 def is_operator(operator: str) -> bool:
@@ -19,7 +19,7 @@ def is_expression_valid(math_expr: str) -> bool:
     :return: true if valid, else false
     """
     for symbol in math_expr:
-        if not (is_operator(symbol) or symbol.isnumeric() or symbol == " "):
+        if not (is_operator(symbol) or symbol.isnumeric() or symbol == " " or symbol == "."):
             print("Unrecognised symbol in your expression [{0}]".format(symbol))
             return False
     return True
@@ -46,9 +46,23 @@ def execute_last_operator_in_operator_list(operator_list: List[Operator], operan
     temp_operator_obj = operator_list[-1]
     operands_lst_for_operator = []
     for i in range(temp_operator_obj.get_number_of_operands()):
-        operands_lst_for_operator.append(operand_list.pop(len(operand_list) - 1))
+        operands_lst_for_operator.insert(0, operand_list.pop(len(operand_list) - 1))
     operand_list.append(temp_operator_obj.calculate(operands_lst_for_operator))
     operator_list.pop(len(operator_list) - 1)
+
+
+def find_number(expression: str, beg_index: int) -> Tuple[float, int]:
+    """
+    :param expression: an expression to find the number from
+    :param beg_index: index to start from
+    :return: a tuple containing the number in the string and its end index
+    """
+    end_index = beg_index
+    while end_index < len(expression) and (expression[end_index].isnumeric() or expression[end_index] == "."):
+        end_index += 1
+    temp_operand = float(expression[beg_index:end_index])
+    end_index -= 1
+    return temp_operand, end_index
 
 
 def calculate_math_expression(math_expr: str) -> float | None:
@@ -59,15 +73,17 @@ def calculate_math_expression(math_expr: str) -> float | None:
     """
     operand_list = []
     operator_list = []
-
     symbol_index = 0
     while symbol_index < len(math_expr):
         symbol = math_expr[symbol_index]
 
         if symbol.isnumeric():
-            operand_list.append(float(symbol))
+            operand, new_index = find_number(math_expr, symbol_index)
+            operand_list.append(operand)
+            symbol_index = new_index
+            symbol = math_expr[symbol_index]
 
-        elif is_operator(symbol):
+        if is_operator(symbol):
             operator_obj = CreateOperator.get_operator(symbol)
             while len(operator_list) > 0 and is_priority_higher(operator_list[-1], operator_obj):
                 execute_last_operator_in_operator_list(operator_list, operand_list)
